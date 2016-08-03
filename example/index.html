@@ -99,7 +99,7 @@
 				delay = 500;
 
 				websocket = require('websocket-stream');
-				ws = websocket('ws://localhost:9225');
+				ws = websocket('ws://localhost:8080');
 
 				streamManager = new StreamManager(ws);
 				streamManager.bindScene(scene);

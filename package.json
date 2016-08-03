@@ -7,6 +7,7 @@
     "url": "https://github.com/fl4re/rest3d"
   },
   "dependencies": {
+    "ws":"^1.1.1",
     "websocket-stream": "^3.2.1",
     "util": "^0.10.3",
     "events":"^1.1.1"

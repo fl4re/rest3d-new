@@ -1,12 +1,13 @@
 // Server exemple
-var wss 			= require('websocket-stream');
+
+var websocket		= require('websocket-stream');
 var gltfStreamer 	= require('../src/server/glTFstreamer');
 
 
 
 var VERBOSE = true;
-wss.createServer({port: 9225}, function(stream){
-	wss.write('yo');
+
+function handle (stream){
 	if (VERBOSE){
 		console.log('-------------------------------- CONNECTION --------------------------------');
 	}
@@ -26,4 +27,10 @@ wss.createServer({port: 9225}, function(stream){
 			console.log('--------------------------- TRANSMITION CLOSED -----------------------------');
 		}
 	});
-});
+};
+
+
+websocket.createServer({server: wss}, handle);
+
+
+
