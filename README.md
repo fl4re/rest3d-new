@@ -52,10 +52,10 @@ streamManager.launchStream('path/myAsset.gltf');
 ## How to run:
 1. download this project
 2. [install nodejs](https://docs.npmjs.com/getting-started/installing-node) if you never did
-3. at rest3d-new-master/src/server/ >npm install
-4. at rest3d-new-master/example/ >npm install
-5. at rest3d-new-master/example/ >npm run start
-6. visit http://localhost:8080
+3. at rest3d-new-master/src/server/ `npm install`
+4. at rest3d-new-master/example/ `npm install`
+5. at rest3d-new-master/example/ `npm run start`
+6. visit `http://localhost:8080`
 7. press `start` button
 
 ## What is supported or not:
@@ -101,11 +101,14 @@ streamManager.launchStream('path/myAsset.gltf');
 
 ###@author
 **Selim Bekkar** selim.bekkar_at_gmail.com
+
 [Starbreeze Studio](http://www.starbreeze.com)
 
 ###@contributor
 **Maxime Helen** helenmaxime_at_gmail.com
+
 **Remi Arnaud** remi.arnaud_at_starbreeze.com
+
 **Mark Barnes** mark.barnes@starbreeze.com
 
 [Starbreeze Studio](http://www.starbreeze.com)
