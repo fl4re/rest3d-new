@@ -1312,7 +1312,7 @@ StreamManager.prototype.sendAssetRequiered = function(asset,streamMode) {
 	if(asset===undefined){
 		alert('You must give a valid url to see something (ex: /viewer/?url=fille:///path/asset.gltf');
 	}
-	if(streamMode !=== undefined){
+	if (streamMode !== undefined){
 		this.setStreamMode(streamMode);
 	}
 
@@ -1337,7 +1337,7 @@ StreamManager.prototype.setStreamMode = function (streamMode){
 	else{
 		this.streamMode = streamMode;
 	}
-	this.sendOrderRequiered(streamMode);
+	this.sendSortingRequiered(streamMode);
 };
 
 StreamManager.prototype.sendSortingRequiered = function(streamMode) {

@@ -4,7 +4,7 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-		<script src="./lib/threemin.js"></script>
+		<script src="./lib/three.min.js"></script>
 		<script src="./lib/OrbitControls.js"></script>
 
 		<script src="./lib/stats.min.js"></script> 
@@ -16,7 +16,7 @@
 
 		<script src="./lib/websocket-stream.js"></script> 
 
-		<script src="../src/client/glTFstreamer4threejs.js"></script> 
+		<script src="./src/client/glTFstreamer4threejs.js"></script> 
 
 		<style>
 			body {
@@ -93,7 +93,8 @@
 			function onload() {
 
 				window.addEventListener( 'resize', onWindowResize, false );
-				queryAsset();
+				//queryAsset();
+				assetPath = '/viewer/assets/CesiumMan/glTF/Cesium_Man.gltf';
 				initScene();
 
 				delay = 500;

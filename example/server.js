@@ -1,8 +1,18 @@
 // Server exemple
-
+var Path 			= require('path');
+var express 		= require('express');
 var websocket		= require('websocket-stream');
 var gltfStreamer 	= require('../src/server/glTFstreamer');
 
+
+var app = express();
+var basePath = Path.join(process.cwd(), 'viewer');
+app.use(express.static(basePath));
+//app.use(express.static('viewer/assets'));ç
+app.use('/src/client', express.static('../src/client'));
+//app.get('/');
+
+//var server = http.createServer().listen(8080);
 
 
 var VERBOSE = true;
@@ -12,6 +22,7 @@ function handle (stream){
 		console.log('-------------------------------- CONNECTION --------------------------------');
 	}
 	var assetManager = gltfStreamer.assetManager();
+	assetManager.setbasePath(basePath);
 	assetManager.bindWebSocket(stream);
 	assetManager.initEvent();
 
@@ -29,8 +40,9 @@ function handle (stream){
 	});
 };
 
-
-websocket.createServer({server: wss}, handle);
-
+var server = app.listen(8080);
+//console.log(server.address().address);
+websocket.createServer({server: server}, handle);
+//this.webSocket.socket._socket.server.address().address;
 
 

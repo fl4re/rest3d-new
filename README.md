@@ -5,6 +5,9 @@ selim.bekkar_at_gmail.com··
 [Starbreeze Studio](http://www.starbreeze.com)
 
 ##About rest3d
+This project aim to provide a protocol and tools to feed a client with 3d data. 
+The main idea is to let the client decide what kind of data he want to visualise in first. 
+To be generic and not depending on other restrictive liscence tools, rest3d is based on [glTF format](https://github.com/KhronosGroup/glTF) and [three.js 3D library](http://threejs.org) and [Node.js](https://nodejs.org).
 
 ##Usage
 ###Server

@@ -25,8 +25,8 @@ var computeL2SquaredNorm = function (vectorA, vectorB){
 	return l2SquaredNorm;
 };
 
-var createRelativeURL = function(baseURL, fileName){
-	var relativeURL = Path.relative(__dirname.replace(/\\/g,'/'), baseURL);
+var createRelativeURL = function(basePath, baseURL, fileName){
+	var relativeURL = Path.relative(basePath.replace(/\\/g,'/'), baseURL);
 	return Path.join(relativeURL,fileName);
 };
 
@@ -894,12 +894,14 @@ function AssetManager () {
 	eventEmitter.call(this);
 	this.properties 	= []; // This is a stack of properties defineds by a tuple {propertyID, propertyName, property, score}. A property can be primitives or attributes
 						  //'score' is compute with the sorting method and used to rank our stack. 
-	this.webSocket 		= undefined ;
+	this.webSocket 		= undefined;
+	this.basePath		= __dirname;
 	this.launched 		= false;
 	this.sizeOfAnimChunk= 32;
 	this.behavior 		= {sort:'DEFAULT', display:'DEFAULT', extra: 'INDICES'}; 
 	this.info 			= {};
-	this.path 			= undefined ;
+	this.transfertOrder = undefined;
+	this.path 			= undefined;
 	this.dataManager 	= new DataManager();
 	this.nodeManager 	= new NodeManager();
 }
@@ -958,7 +960,7 @@ AssetManager.prototype.initEvent = function(){
 		}
 		var gltfAsset = that.openAsset(path);
 		that.parseGltf(gltfAsset);
-		that.setBehavior(behavior);
+		that.setBehavior(that.transfertOrder);
 		if(VERBOSE){
 			console.log('>>>>>>>>>>>>> Sorting OK <<<<<<<<<<<<<<');
 			this.displayTree('');
@@ -1037,6 +1039,8 @@ AssetManager.prototype.setBehavior = function(newBehavior){
 	if(this.launched){
 		this.pauseStream();
 	}
+
+	this.transfertOrder = newBehavior;
 	
 	for (var i=0; i<this.properties.length; i++){
 		this.properties[i].property.setBehavior(newBehavior);
@@ -1218,6 +1222,11 @@ AssetManager.prototype.openAsset = function (path){
 		}
 		this.path = Path.dirname(path);
 	}
+	else if (dataURL.protocol===null){
+		path = Path.join(process.cwd(), path);
+
+		this.path = Path.dirname(path); 
+	}
 	else if (dataURL.protocol==='http:'){
 		/*TODO*/
 		messageDelivery('error',dataURL, 'AssetManager.openAsset', 
@@ -1287,7 +1296,7 @@ AssetManager.prototype.getInfoFromTexture = function (textureName, gltfFile){
 
 	currentTexture.sampler 	= sampler;
 	currentTexture.textureName 	= textureName;
-	currentTexture.path 	= createRelativeURL(this.path, image.uri);
+	currentTexture.path 	= createRelativeURL(this.basePath, this.path, image.uri);
 	return currentTexture;
 };
 
@@ -1303,6 +1312,10 @@ AssetManager.prototype.getInfoFromSkin = function (skinName, gltfFile){
 	}
 	//ADD EXTRA + EXTENSIONS ?
 	return skinInfo;
+};
+
+AssetManager.prototype.setbasePath = function (basePath){
+	this.basePath = basePath;
 };
 
 
