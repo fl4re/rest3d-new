@@ -1310,7 +1310,8 @@ StreamManager.prototype.manageMessage = function (message){
 
 StreamManager.prototype.sendAssetRequiered = function(asset,streamMode) {
 	if(asset===undefined){
-		alert('You must give a valid url to see something (ex: /viewer/?url=fille:///path/asset.gltf');
+		alert('You must give a valid url to see something (ex: http://localhost:8080/?url=fille:///path/asset.gltf');
+		return;
 	}
 	if (streamMode !== undefined){
 		this.setStreamMode(streamMode);

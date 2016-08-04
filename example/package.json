@@ -1,0 +1,34 @@
+{
+  "name": "rest3d-example",
+  "description": "An exemple of rest3d server implementation",
+  "version": "0.1.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fl4re/rest3d-new/tree/master/example"
+  },
+  "dependencies": {
+    "websocket-stream": "^3.2.1",
+    "path":"^0.12.7",
+    "express": "^4.14.0"
+  },
+  "contributors":[{
+      "name": "Selim Bekkar",
+      "email": "selim.bekkar@gmail.com"
+    },
+    {
+      "name": "Maxime Helen",
+      "email": "helenmaxime@gmail.com"
+    },
+    {
+      "name": "Remi Arnaud",
+      "email": "remi.arnaud@starbreeze.com"
+    },
+    {
+      "name": "Mark Barnes",
+      "email": "mark.barnes@starbreeze.com"
+  }],
+  "license": "MIT",
+  "scripts": {
+    "start": "node ./server.js"
+  }
+}

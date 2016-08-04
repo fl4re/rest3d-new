@@ -1,9 +1,4 @@
 
-Selim Bekkar··
-selim.bekkar_at_gmail.com··
-
-[Starbreeze Studio](http://www.starbreeze.com)
-
 ##About rest3d
 This project aim to provide a protocol and tools to feed a client with 3d data. 
 The main idea is to let the client decide what kind of data he want to visualise in first. 
@@ -25,7 +20,7 @@ function handle (stream){
         });
 };
 
-ws.createServer({port: 9225}, handle);
+ws.createServer({server: yourServer}, handle);
 ```
 
 ###Client
@@ -39,7 +34,7 @@ var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHe
 var renderer = new THREE.WebGLRenderer();
 renderer.setSize( window.innerWidth, window.innerHeight ); document.body.appendChild( renderer.domElement );
 
-var ws = websocket('ws://localhost:9225');
+var ws = websocket('ws://localhost:8080');
 var streamManager = new StreamManager(ws);
 streamManager.bindScene(scene);
 
@@ -51,14 +46,17 @@ render();
 streamManager.launchStream('path/myAsset.gltf');
 
 ```
-Visit [example page](https://github.com/fl4re/rest3d-new/tree/master/example) ready to use file 
-Visit [wiki page](https://github.com/fl4re/rest3d-new/wiki) for more details 
+**Visit [example page](https://github.com/fl4re/rest3d-new/tree/master/example) for ready to use example **
+**Visit [wiki page](https://github.com/fl4re/rest3d-new/wiki) for more details **
 
 ## How to run:
-1. npm install
-2. node proxy.js
-3. http://localhost:9224/cbp/open/viewer?url=file:///yourPath/fl4re-ui/src/server/static/cbp/assets/Book/glTF/books-test.gltf
-4. play with buttons
+1. download this project
+2. [install nodejs](https://docs.npmjs.com/getting-started/installing-node) if you never did
+3. at rest3d-new-master/src/server/ >npm install
+4. at rest3d-new-master/example/ >npm install
+5. at rest3d-new-master/example/ >npm run start
+6. visit http://localhost:8080
+7. press `start` button
 
 ## What is supported or not:
 - [x] Return server errors and warning to client
@@ -101,4 +99,14 @@ Visit [wiki page](https://github.com/fl4re/rest3d-new/wiki) for more details
 - [ ] Help Menu
 - [x] Layers display
 
+###@author
+**Selim Bekkar** selim.bekkar_at_gmail.com
+[Starbreeze Studio](http://www.starbreeze.com)
+
+###@contributor
+**Maxime Helen** helenmaxime_at_gmail.com
+**Remi Arnaud** remi.arnaud_at_starbreeze.com
+**Mark Barnes** mark.barnes@starbreeze.com
+
+[Starbreeze Studio](http://www.starbreeze.com)
  	

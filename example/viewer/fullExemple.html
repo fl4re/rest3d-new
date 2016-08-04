@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+		<script src="./lib/three.min.js"></script>
+		<script src="./lib/OrbitControls.js"></script>
+
+		<script src="./lib/stats.min.js"></script> 
+		<script src="./lib/dat.gui.min.js"></script>
+		<script src="./lib/TGALoader.js"></script>
+		<script src="./lib/DDSLoader.js"></script>
+
+		<script src="./lib/glTFAnimation.js"></script>
+
+		<script src="./lib/websocket-stream.js"></script> 
+
+		<script src="./src/client/glTFstreamer4threejs.js"></script> 
+
+		<style>
+			body {
+				font-family: Monospace;
+				background-color: #EEF;
+				margin: 0px;
+				overflow: hidden;
+			}
+
+			#info {
+				color: #808080;
+				position: absolute;
+				top: 5px;
+				width: 100%;
+				text-align: center;
+				z-index: 100;
+				display:block;
+			}
+
+			#container {
+				position: absolute;
+				top: 0px;
+				width:100%;
+				height:100%;
+				z-index: -1;
+			}
+
+			#info a, .button { color: #f00; font-weight: bold; text-decoration: underline; cursor: pointer }
+		</style>
+	</head>
+
+	<body>
+		<div id="info">
+		Rest3D viewer alpha 0.3
+		</div>
+	<div id="container">
+	</div>
+	<div id="status">
+	</div>
+	
+
+
+		<script>
+			var VERBOSE = true;
+			var container, stats, gui;
+			var camera, scene, renderer, loader;
+			var envMap;
+
+			var textureCube1, textureCube2;
+
+			var ambient, directionalLight;
+
+			var defaultCamera = null;
+			var defaultTexture;
+			var defaultImage;
+
+			var axisHelper;
+			var floor;
+
+			var viewerMode, streamMode;
+			var assetPath;
+
+			var streamManager;
+			var websocket, ws;
+			var delay;
+
+			var skeletonHelper;
+
+			function onload() {
+
+				window.addEventListener( 'resize', onWindowResize, false );
+				queryAsset();
+				//assetPath = '/viewer/assets/CesiumMan/glTF/Cesium_Man.gltf';
+				initScene();
+
+				delay = 500;
+
+				websocket = require('websocket-stream');
+				ws = websocket('ws://localhost:8080');
+
+				streamManager = new StreamManager(ws);
+				streamManager.bindScene(scene);
+				streamManager.setEnvMap(envMap);
+
+				streamManager.setDelay(delay);
+				streamManager.setDefaultImage(new THREE.ImageLoader().load('./assets/Starbreeze_logo.jpg'));
+				streamManager.setOnSuccess(function(message){
+					console.log('Asset downloaded');
+				});
+
+				initGUI();
+				animate();
+
+			}
+
+			var queryString = function () {
+				// This function is anonymous, is executed immediately and 
+				// the return value is assigned to QueryString!
+				var query_string = {};
+		  		var query = window.location.search.substring(1);
+				var vars = query.split("&");
+				for (var i=0;i<vars.length;i++) {
+		    		var pair = vars[i].split("=");
+		        	// If first entry with this name
+				    if (typeof query_string[pair[0]] === "undefined") {
+				    	query_string[pair[0]] = decodeURIComponent(pair[1]);
+				        // If second entry with this name
+				    } else if (typeof query_string[pair[0]] === "string") {
+				    	var arr = [ query_string[pair[0]],decodeURIComponent(pair[1]) ];
+				    	query_string[pair[0]] = arr;
+				        // If third or later entry with this name
+				    } 
+				    else {
+				    	query_string[pair[0]].push(decodeURIComponent(pair[1]));
+				    }
+				} 
+			return query_string;
+			};
+
+			var queryAsset = function(){
+
+				var arg = queryString();
+				console.log(arg);
+				// if(path.dirname(arg.url)!=='.gltf'){
+				// 	console.error('Can not open something else than glTF file');
+				// }
+				if (arg.viewerMode !== undefined){
+					viewerMode = arg.viewerMode;
+				}
+				else{
+					viewerMode = 'default';
+				}
+				if(arg.streamMode !== undefined){
+					streamMode = arg.streamMode;
+				}
+				else{
+					streamMode = 'default';
+					assetPath = arg.url;
+				}
+			};
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////// THREEJS /////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+			function initScene() {
+
+				container = document.getElementById( 'container' );
+				cs = document.getElementById('cs'); 
+
+				scene = new THREE.Scene();
+
+				// RENDERER
+				renderer = new THREE.WebGLRenderer({antialias:true});
+				renderer.setClearColor( 0x020217);
+				renderer.toneMapping = THREE.LinearToneMapping;
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				container.appendChild( renderer.domElement );
+
+				defaultCamera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 0.1, 100000 );
+				defaultCamera.position.set( 5, 5, 5 );
+				defaultCamera.lookAt(new THREE.Vector3(0,0,0));
+
+
+				scene.add( defaultCamera );
+
+				floor = grid();
+				scene.add(floor);
+
+				axisHelper= new THREE.AxisHelper(5);
+				scene.add(axisHelper);
+
+				
+				ambient = new THREE.AmbientLight( 0xB3B2C2 );	
+				scene.add( ambient );
+				directionalLight = new THREE.DirectionalLight( 0xFEFBC9, 0.5 );
+				directionalLight.position.set( 10, 10, 10);
+				scene.add( directionalLight );
+
+			 	textureCube1 = new THREE.CubeTextureLoader()
+					.setPath( 'assets/envMap/Park2/' )
+					.load( [ 'posx.jpg', 'negx.jpg', 'posy.jpg', 'negy.jpg', 'posz.jpg', 'negz.jpg' ] );
+				textureCube1.name = 'Park2';
+
+				textureCube2 = new THREE.CubeTextureLoader()
+					.setPath( 'assets/envMap/skybox/' )
+					.load( [ 'px.jpg', 'nx.jpg', 'py.jpg', 'ny.jpg', 'pz.jpg', 'nz.jpg' ] );
+				textureCube2.name = 'Sky';
+
+				
+
+			 	envMap = textureCube1;
+
+				//STATS
+				stats = new Stats();
+				stats.domElement.style.position = 'absolute';
+				stats.domElement.style.top = '0px';
+				container.appendChild( stats.domElement );
+
+				orbitControls = new THREE.OrbitControls(defaultCamera, renderer.domElement);
+
+				onWindowResize();
+				animate();
+			};
+
+
+			function onWindowResize() {
+
+				defaultCamera.aspect = container.offsetWidth / container.offsetHeight;
+				defaultCamera.updateProjectionMatrix();
+
+				renderer.setSize( window.innerWidth, window.innerHeight );
+			};
+
+			function render() {
+				renderer.render( scene, defaultCamera );
+			};
+
+			function animate() {
+
+				requestAnimationFrame( animate );
+				THREE.glTFAnimator.update();
+				if (skeletonHelper){
+					skeletonHelper.update();
+				}
+				render();
+				stats.update();
+
+			};
+
+			function resetScene(){
+
+			};
+
+
+			function grid(size=20, spacing=0.5){
+
+				var vertices = [];
+
+				for (var i=0.; i<=size; i=i+spacing){
+
+					vertices.push(-size/2 +i, -0.0001, -size/2 	, -size/2 +i, -0.0001,  size/2);
+					vertices.push(-size/2	, -0.0001, -size/2 + i, size/2	, -0.0001, -size/2 +i);
+				};
+
+				var geometry = new THREE.BufferGeometry();
+				geometry.addAttribute( 'position', new THREE.BufferAttribute( new Float32Array(vertices), 3 ) );
+
+				var material = new THREE.LineBasicMaterial( { color: 'grey', linewidth: 2*spacing } );
+
+				return new THREE.LineSegments(geometry,material);
+			};
+
+			function activateWireframeLayout(_root, id){
+
+				if (_root instanceof THREE.Mesh){
+					if (id ==='All' || _root.name === id){
+						_root.material.wireframe 	= true;
+					} 
+				}
+				
+				_root.children.forEach(function(element, index, array){
+					activateWireframeLayout(element, id);
+				});
+			};
+
+			function activatePbrLayout(_root, id){
+
+				if (_root instanceof THREE.Mesh){
+					if (id ==='All' || _root.name === id){
+						_root.material.wireframe = false;
+						if (_root.material.type === 'MeshStandardMaterial'){
+
+							var initialMaterial = _root.material.previousMaterial;
+
+							//if he is null, that means that he is already our orginial material 
+							if (initialMaterial !== null){ 
+								_root.material = initialMaterial;
+							}
+						}
+					} 
+				}
+				_root.children.forEach(function(element, index, array){
+					activatePbrLayout(element, id);
+				});
+			};
+
+			function updateEnvMap(_root, id, map){
+			
+				if (_root instanceof THREE.Mesh){
+					if (id ==='All' || _root.name === id){
+						if (_root.material.type === 'MeshStandardMaterial'){
+							_root.material.envMap = map;
+							_root.material.needsUpdate = true;
+						}
+					} 
+				}
+				_root.children.forEach(function(element, index, array){
+					updateEnvMap(element, id, map);
+				});
+			};
+
+			//this is the general function to display a single component of a PBR material. The component is affected through the function passed in parametre
+			function activateComponentLayout(_root, id, affectFunction){
+
+				if (_root instanceof THREE.Mesh){
+					if (id ==='All' || _root.name === id){
+						_root.material.wireframe = false;
+						if (_root.material.type === 'MeshStandardMaterial'){
+
+							var newMaterial = new THREE.MeshStandardMaterial( { color: 0xFFFFFF, roughness: 1.0, metalness: 0.0} );
+
+							var initialMaterial = _root.material.previousMaterial;
+
+							if (initialMaterial !== null){ 
+								affectFunction (newMaterial,initialMaterial);
+								newMaterial.previousMaterial = initialMaterial;
+								newMaterial.skinning = initialMaterial.skinning;
+							}
+							else{
+								affectFunction(newMaterial,_root.material);
+								newMaterial.previousMaterial = _root.material;
+								newMaterial.skinning = _root.material.skinning;
+							}
+
+							_root.material = newMaterial;
+						}
+					} 
+				}
+				_root.children.forEach(function(element, index, array){
+					activateComponentLayout(element, id, affectFunction);
+				});
+			};
+
+
+
+			function changeLayout(value, id){
+
+				switch (value){
+					case 'Pbr':
+						activatePbrLayout(scene,id);
+						break;
+					case 'Wireframe':
+						activateComponentLayout(scene, id, function(materialA, materialB){materialA.map = null;});
+						activateWireframeLayout(scene, id);
+						break;
+					case 'Albedo':
+						activateComponentLayout(scene, id, function(materialA, materialB){materialA.map = materialB.map;});
+						break;
+					case 'Normalmap':
+						activateComponentLayout(scene, id, function(materialA, materialB){materialA.map = materialB.normalMap;});
+						break;
+					case 'Glossmap':
+						activateComponentLayout(scene, id, function(materialA, materialB){materialA.map = materialB.roughnessMap;});
+						break;
+					case 'Metalmap':
+						activateComponentLayout(scene, id, function(materialA, materialB){materialA.map = materialB.metalnessMap;});
+						break;
+					case 'AOmap':
+						activateComponentLayout(scene, id, function(materialA, materialB){materialA.map = materialB.aoMap;});
+						break;
+					case 'Emissivemap':
+						activateComponentLayout(scene, id, function(materialA, materialB){materialA.map = materialB.emissiveMap;});
+						break;
+					case 'Parallaxmap':
+						activateComponentLayout(scene, id, function(materialA, materialB){materialA.map = materialB.bumpMap;});
+						break;
+					case 'Nothing':
+						activateComponentLayout(scene, id, function(materialA, materialB){materialA.map = null;});
+						break;
+					default:
+						console.error(value+' layout is not defined');
+				}
+			};
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////// GUI ///////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+		var mode = {asset: 		{sort:'DEFAULT', display:'ONEAFTERONE', extra:'INDICES'}, 
+					primitive: 	{sort:'DEFAULT', display:'DEFAULT', extra:'NONE'}, 
+					attribute: 	{sort:'DEFAULT'}};
+
+		var initGUI = function(){
+
+			var startStream = function(){
+
+				if (!streamManager.isLaunched ){
+					console.log('stream launched');
+					streamManager.loadModel(assetPath,mode);
+					//streamManager.loadModel(assetPath);
+				}
+				else{
+					streamManager.setDelay(streamController.delay);
+					streamManager.resumeStream();
+				}
+			};
+
+			var pauseStream = function(){
+					streamManager.pauseStream();
+			};
+
+			//That's not a good way to reload the scene
+			var resetStream = function(){
+				streamManager.resetStream();
+				location.reload();
+			};
+
+			var changeEnvMap = function(value){
+				
+				switch(value){
+					case 'None':
+						envMap 			= null;
+						backgroundEnv 	= null;
+						break;
+					case 'Park':
+						envMap 			= textureCube1;
+						backgroundEnv 	= textureCube1;
+						break;
+					case 'Sky':
+						envMap 			= textureCube2;
+						backgroundEnv 	= textureCube2;
+						break;
+					default:
+						break;
+				}
+				if (displayController.displayEnvMap) scene.background = backgroundEnv;
+				updateEnvMap(scene, 'All', envMap);
+
+			};
+
+			var setSortMode = function (value){
+				switch(value){
+					case 'BoundingBox_Ascending':
+						mode.asset.sort 	= 'MAX_ASCENDING';
+						mode.primitive.sort = 'BB_DIST_ASCENDING';
+						break;
+					case 'Default':
+						mode.asset.sort 	= 'DEFAULT';
+						mode.primitive.sort = 'DEFAULT';
+						break;
+					default:
+						break;
+				}
+				streamManager.setStreamMode(mode);
+			};
+
+			var setDisplayMode = function (value){
+				switch(value){
+					case 'One_After_One':
+						mode.asset.display 		= 'ONEAFTERONE';
+						mode.primitive.display 	= 'DEFAULT';
+						break;
+					case 'Default':
+						mode.asset.display 		= 'DEFAULT';
+						mode.primitive.display 	= 'DEFAULT';
+						break;
+					default:
+						break;
+				}
+				streamManager.setStreamMode(mode);
+			};
+
+			var setExtraMode = function (value){
+				switch(value){
+					case 'None':
+						mode.primitive.extra = 'NONE';
+						break;
+					case 'Anim in first':
+						mode.primitive.extra = 'ANIM_IN_FIRST';
+						mode.asset.extra = 'INDICES+ANIM_IN_FIRST';
+						//mode.attribute.sort = 'ANIM_IN_FIRST';
+						break;
+					case 'Anim in last':
+						mode.primitive.extra = 'ANIM_IN_LAST';
+						mode.asset.extra = 'INDICES+ANIM_IN_LAST';
+						break;
+					case 'Temporal':
+						mode.primitive.extra = 'TEMPORAL';
+						break;
+					case 'Anim in first+Temporal':
+						mode.primitive.extra = 'ANIM_IN_FIRST+TEMPORAL';
+						mode.asset.extra = 'INDICES+ANIM_IN_FIRST';
+						break;
+					default:
+						break;
+				}
+				streamManager.setStreamMode(mode);
+			};
+
+			var gui = new dat.GUI();
+
+			var streamController = {
+				start 	: startStream,
+				pause 	: pauseStream,
+				reset 	: resetStream,
+				sort 	: 'Default',
+				display : 'One_After_One',
+				extra   : 'None',
+				delay 	: 100,
+				mesh 	: 'none',
+				data 	: 'none'
+			};
+
+			streamManager.setDelay(100);
+
+			var displayController = {
+				selectMesh: 'All',
+				layout: 'Pbr',
+				displayEnvMap: false,
+				selectEnvMap: 'Park',
+				lights: true,
+				displaySkeleton: false
+			};
+
+			var testFunction = function(){
+			}
+
+			var debuggerController = {
+				verbose: false,
+				print_Scene : function(){console.log(scene);},
+				print_streamManager : function(){console.log(streamManager);},
+				saveLog: function(){console.log('Log saving is not supported for the moment');},
+				print_gui : function(){console.log(gui); console.log(meshList);},
+				testButton: testFunction
+			}
+
+			streamManager.setVerbose(false);
+
+			var meshList = ['All', 'TEST1', 'TEEST!'];
+
+			var foldStream = gui.addFolder('Streaming');
+			foldStream.add(streamController, 'start');
+			foldStream.add(streamController, 'pause');
+			foldStream.add(streamController, 'reset');
+			foldStream.add(streamController, 'sort', ['BoundingBox_Ascending', 'Default']).onChange(setSortMode);
+			foldStream.add(streamController, 'display', ['One_After_One', 'Default']).onChange(setDisplayMode);
+			foldStream.add(streamController, 'extra', ['None', 'Anim in first', 'Temporal','Anim in first+Temporal']).onChange(setExtraMode);
+			foldStream.add(streamController, 'mesh').listen();
+			foldStream.add(streamController, 'data').listen();
+			foldStream.add(streamController, 'delay', 0, 250).onChange(function(value){streamManager.setDelay(value)});
+			
+
+			var foldDisplay = gui.addFolder('Display');
+			foldDisplay.add(displayController, 'selectMesh', meshList);
+			foldDisplay.add(displayController, 'layout', ['Pbr', 'Wireframe', 'Albedo', 'Normalmap', 'Glossmap', 'Metalmap',
+						 			'AOmap', 'Emissivemap', 'Parallaxmap', 'Nothing']).onChange(function(value){
+						 			changeLayout(value, displayController.selectMesh);});
+			foldDisplay.add(displayController, 'displayEnvMap').onChange(function(value){
+									if (value) scene.background = envMap;
+									else scene.background = null;});
+			foldDisplay.add(displayController, 'selectEnvMap',['Park', 'Sky', 'None']).onChange(changeEnvMap);
+			foldDisplay.add(displayController, 'lights').onChange(function(value){
+									if (value){
+										ambient.visible = true;
+										directionalLight.visible = true;
+									} 
+									else {
+										ambient.visible = false;
+										directionalLight.visible = false;
+									}});
+			foldDisplay.add(displayController, 'displaySkeleton').onChange(function(value){
+									if (value){
+										scene.remove(skeletonHelper);
+										skeletonHelper = new THREE.SkeletonHelper(scene);
+										skeletonHelper.material.linewidth = 3;
+										scene.add(skeletonHelper);
+									}
+									else{
+										skeletonHelper.visible = false;
+									}});
+
+			var foldDebugger = gui.addFolder('Debugger');
+			foldDebugger.add(debuggerController, 'verbose').onChange(function(value){ streamManager.setVerbose(value); });
+			foldDebugger.add(debuggerController, 'print_Scene');
+			foldDebugger.add(debuggerController, 'print_streamManager');
+			foldDebugger.add(debuggerController, 'saveLog');
+			foldDebugger.add(debuggerController, 'print_gui');
+			foldDebugger.add(debuggerController, 'testButton');
+
+
+			console.log(foldDisplay);
+
+			var update = function() {
+				requestAnimationFrame(update);
+				var infoData = streamManager.getCurrentInfo();
+				if (!infoData.inProgress){
+					streamController.mesh = 'Press Start';
+		  			streamController.data = 'None 0 %';
+				}
+				else if (infoData.attribute === 'texture'){
+					streamController.mesh = infoData.id;
+					streamController.data = infoData.name;
+				}
+				else if (infoData.attribute === 'material'){
+					streamController.mesh = infoData.id;
+					streamController.data = 'material';
+				}
+				else if (infoData.attribute === 'camera'){
+					//osef
+				}
+				else if (infoData.attribute === 'animation'){
+					streamController.mesh = infoData.id;
+		  			streamController.data = infoData.name;
+				}
+				else {
+					streamController.mesh = infoData.id;
+		  			streamController.data = infoData.attribute + ' ' + Math.floor((100/infoData.count)
+		  								*(infoData.sizeReceived/getSizeOfType(infoData.type))) + '%' ;
+			  	}
+			};
+
+			update();
+			foldStream.open();
+		};
+
+
+		onload();
+		//////////////////////////////////////////////////////////
+		//  http://localhost:8080/?url=file:///yourPath/assets/CesiumMan/glTF/Cesium_Man.gltf
+		//  http://localhost:8080/?url=/viewer/assets/CesiumMan/glTF/Cesium_Man.gltf
+		//////////////////////////////////////////////////////////
+		</script>
+
+	</body>
+</html>

@@ -1,0 +1,32 @@
+{
+  "name": "rest3d-server",
+  "description": "streaming protocol for feeding a Three.js client with a glTF file",
+  "version": "0.1.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fl4re/rest3d-new/tree/master/src/server"
+  },
+  "dependencies": {
+    "util": "^0.10.3",
+    "events":"^1.1.1",
+    "path":"^0.12.7",
+    "url": "^0.11.0"
+  },
+  "contributors":[{
+      "name": "Selim Bekkar",
+      "email": "selim.bekkar@gmail.com"
+    },
+    {
+      "name": "Maxime Helen",
+      "email": "helenmaxime@gmail.com"
+    },
+    {
+      "name": "Remi Arnaud",
+      "email": "remi.arnaud@starbreeze.com"
+    },
+    {
+      "name": "Mark Barnes",
+      "email": "mark.barnes@starbreeze.com"
+  }],
+  "license": "MIT"
+}
