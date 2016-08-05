@@ -828,7 +828,7 @@ Who can do more can do less... Thus we need to tranform a acyclic graph into a t
 		\   /                 |   |       |   |        |
 		mesh1                m1   m1'    m1'' m1'''  m''''
 
-Meshes are not considered as a node in gltfSpec. That why this graph still acyclic. But for threejs, a mesh is a node ! 
+Meshes are not considered as a node in glTF spec. That why this graph still acyclic. But for threejs, a mesh is a node ! 
 Thus this probleme become to convert a ciclyc graph into tree. 
 Important things to remember: we built our tree from leaf to root, and all the parent hierarchy of a node is sent in one time. 
 So when we receive mesh1 hierarchy, we are sure to have all informations to build/connect him to his whole tree.
