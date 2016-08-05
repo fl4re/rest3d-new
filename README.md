@@ -5,7 +5,7 @@ The main idea is to let the client decide what kind of data he want to visualise
 To be generic and not depending on other restrictive liscence tools, rest3d is based on [glTF format](https://github.com/KhronosGroup/glTF) and [three.js 3D library](http://threejs.org) and [Node.js](https://nodejs.org).
 
 ## How to run & try:
-1. download this project
+1. clone or download this project
 2. [install nodejs](https://docs.npmjs.com/getting-started/installing-node) if you never did
 3. at rest3d-new-master/src/server/ `npm install`
 4. at rest3d-new-master/example/ `npm install`
@@ -109,7 +109,7 @@ streamManager.launchStream('path/myAsset.gltf');
 
 **Remi Arnaud** remi.arnaud_at_starbreeze.com
 
-**Mark Barnes** mark.barnes@starbreeze.com
+**Mark Barnes** mark.barnes_at_starbreeze.com
 
 [Starbreeze Studio](http://www.starbreeze.com)
  	

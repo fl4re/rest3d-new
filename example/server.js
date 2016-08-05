@@ -32,7 +32,7 @@
 var Path 			= require('path');
 var express 		= require('express');
 var websocket		= require('websocket-stream');
-var gltfStreamer 	= require('../src/server/rest3d_server.js');
+var gltfStream 		= require('../src/server/rest3d_server.js');
 
 
 var app = express();
@@ -46,16 +46,16 @@ function handle (stream){
 	if (VERBOSE){
 		console.log('-------------------------------- CONNECTION --------------------------------');
 	}
-	var assetManager = gltfStreamer.assetManager();
+	var assetManager = gltfStream.assetManager();
 	assetManager.setbasePath(basePath);
 	assetManager.bindWebSocket(stream);
 	assetManager.initEvent();
 
-	stream.on('data', function(header){
+	stream.on('data', function(message){
 		if(VERBOSE){
 			console.log('------------------------------ DATA RECEIVED -------------------------------');
 		}
-		assetManager.feedbackManager(header);
+		assetManager.feedbackManager(message);
 	});
 
 	stream.on('end', function(){
