@@ -16,7 +16,7 @@
 
 		<script src="./lib/websocket-stream.js"></script> 
 
-		<script src="./src/client/glTFstreamer4threejs.js"></script> 
+		<script src="./src/client/rest3d_client.js"></script> 
 
 		<style>
 			body {
@@ -56,9 +56,6 @@
 	</div>
 	<div id="status">
 	</div>
-	
-
-
 		<script>
 			var VERBOSE = true;
 			var container, stats, gui;
@@ -85,29 +82,34 @@
 
 				window.addEventListener( 'resize', onWindowResize, false );
 
-				assetPath = '/viewer/assets/CesiumMan/glTF/Cesium_Man.gltf';
-
 				initScene();
 
 				//this is to simulate a slow connection
 				delay = 500;
 
+				assetPath = '/viewer/assets/CesiumMan/glTF/Cesium_Man.gltf';
+
 				//Create our websocket
 				websocket = require('websocket-stream');
 				ws = websocket('ws://localhost:8080');
 
-				//Create our asset streaming manager
+				//Create our asset streaming manager and bind some usefull things
 				streamManager = new StreamManager(ws);
-				streamManager.bindScene(scene);
-				streamManager.setEnvMap(envMap);
+				streamManager.bindScene(scene); // Bind the threejs scene where object3d will be stored
+				streamManager.setEnvMap(envMap); // set an environment map to our future material
 
-				streamManager.setDelay(delay);
-				streamManager.setDefaultImage(new THREE.ImageLoader().load('./assets/Starbreeze_logo.jpg'));
+				streamManager.setDelay(delay); //set artificial lag
+				streamManager.setDefaultImage(new THREE.ImageLoader().load('./assets/Starbreeze_logo.jpg')); //set a default image for our futur texture material
+
+				//Bind a function to be prevent when asset transfer is complet
 				streamManager.setOnSuccess(function(message){
 					console.log('Asset downloaded');
 				});
 
+				//Load the graphic user interface
 				initGUI();
+
+				//Start the rendering loop
 				animate();
 
 			}
@@ -121,6 +123,7 @@
 				container = document.getElementById( 'container' );
 				cs = document.getElementById('cs'); 
 
+				//Create a scene
 				scene = new THREE.Scene();
 
 				// RENDERER
@@ -160,10 +163,10 @@
 				stats.domElement.style.top = '0px';
 				container.appendChild( stats.domElement );
 
+				//Add a mousse camera control functionality
 				orbitControls = new THREE.OrbitControls(defaultCamera, renderer.domElement);
 
 				onWindowResize();
-				animate();
 			};
 
 
@@ -191,6 +194,8 @@
 /////////////////////////////////////////////////////////// GUI ///////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
+		// mode will define data ordering transfer
 		var mode = {asset: 		{sort:'DEFAULT', display:'ONEAFTERONE', extra:'INDICES'}, 
 					primitive: 	{sort:'DEFAULT', display:'DEFAULT', extra:'NONE'}, 
 					attribute: 	{sort:'DEFAULT'}};
@@ -322,6 +327,7 @@
 			foldStream.add(streamController, 'data').listen();
 			foldStream.add(streamController, 'delay', 0, 250).onChange(function(value){streamManager.setDelay(value)});
 
+			//To display what it's actualy in transfer
 			var update = function() {
 				requestAnimationFrame(update);
 				var infoData = streamManager.getCurrentInfo();
