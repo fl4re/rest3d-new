@@ -1,6 +1,29 @@
 /* 
-	author: Selim Bekkar 
-	June 2016
+	Rest3d_server is an API to feed a Three.js client with a glTF file
+	author: Selim Bekkar - selim.bekkar@gmail.com
+	Starbreeze - June 2016 - v0.1.3
+
+	The MIT License (MIT)
+
+	Copyright (c) 2016 fl4re
+
+	Permission is hereby granted, free of charge, to any person obtaining a copy
+	of this software and associated documentation files (the "Software"), to deal
+	in the Software without restriction, including without limitation the rights
+	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+	copies of the Software, and to permit persons to whom the Software is
+	furnished to do so, subject to the following conditions:
+
+	The above copyright notice and this permission notice shall be included in all
+	copies or substantial portions of the Software.
+
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+	SOFTWARE.
 */
 'use strict';
 
@@ -14,7 +37,8 @@ var Path 			= require('path').posix;
 /////////////////////////////////////////////////////// TOOL BOX /////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-var VERBOSE = true;
+var VERBOSE = false;
+
 
 //Note: Compute sqrt is useless. More expensive for no gain in our futur usage.
 var computeL2SquaredNorm = function (vectorA, vectorB){
@@ -1631,3 +1655,5 @@ AssetManager.prototype.feedbackManager = function (data){
 };
 
 exports.assetManager = function (){ return new AssetManager();};
+
+exports.setVerbose = function(bool){VERBOSE = bool;}

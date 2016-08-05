@@ -1,6 +1,29 @@
 /* 
-	author: Selim Bekkar 
-	June 2016
+	Rest3d_client is an API to store a glTF stream into a Three.js client
+	author: Selim Bekkar - selim.bekkar@gmail.com
+	Starbreeze - June 2016 - v0.1.3
+
+	The MIT License (MIT)
+
+	Copyright (c) 2016 fl4re
+
+	Permission is hereby granted, free of charge, to any person obtaining a copy
+	of this software and associated documentation files (the "Software"), to deal
+	in the Software without restriction, including without limitation the rights
+	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+	copies of the Software, and to permit persons to whom the Software is
+	furnished to do so, subject to the following conditions:
+
+	The above copyright notice and this permission notice shall be included in all
+	copies or substantial portions of the Software.
+
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+	SOFTWARE.
 */
 
 THREE.glTFInterpolator.prototype.setGUID = function (inputGUID, outputGUID){
@@ -684,9 +707,6 @@ DataReceivedManager.prototype.createAnimation = function (info){
 
 		this.animations[info.animName] = animation;
 	}
-	// if (animation.running){
-	// 	animation.stop();
-	// } /// ????
 
 	if(keys !== undefined && values !== undefined && target !== undefined ){
 		// var interp = { 	keys : keys.data.array,
@@ -700,7 +720,6 @@ DataReceivedManager.prototype.createAnimation = function (info){
 		var interp = { 	keys : keys.data,
 						values : values.data,
 						count : minRecieved,
-						//count : keys.data.length,
 						target : target[0], //TO FIX
 						path : info.path,
 						type : info.interpolation };
@@ -721,13 +740,9 @@ DataReceivedManager.prototype.createAnimation = function (info){
 	var newData = { guid 			: info.guid,
 					data 			: animation,  
 					// sizeReceived 	: 0, TO THINK
-					// componentType 	: info.componentType,
-					// count 			: info.count,
-					// type 			: info.type,
 					 attribute 		: 'animation',
 					 name 			: info.animName, 
 					 inProgress 	: true
-					// storage 		: new Uint8Array(0) 
 				};
 	this.currentData 				= newData;
 	this.dataReceived[info.guid]	= newData;
@@ -749,7 +764,6 @@ DataReceivedManager.prototype.updateAnimation = function (animationName, dataGUI
 			anim.duration = Math.max(anim.duration, currentInterpolator.duration); //we always add more data thus duration can only increase
 		}
 	}
-
 };
 
 
@@ -1004,7 +1018,7 @@ DataReceivedManager.prototype.storeTexture = function (info){
 			}
 		}, onProgress, onError );	
 	}
-	else if(info.path.indexOf('.dds')===info.path.length-4){  // .dds  That's a hack... :/  
+	else if(info.path.indexOf('.dds')===info.path.length-4){  // .dds  That's a hack... :/  TO FIx
 		var loader = new THREE.DDSLoader();
 
 		var textCompressed = loader.load(info.path);
@@ -1061,7 +1075,6 @@ DataReceivedManager.prototype.storeBuffer = function(data) {
 		/*TODO*/
 	}
 
-
 	var dataOrganized = this.splitAndStoreDataOutOfBound(data, size_p, size_n);
 	var littleIndian = true;
 
@@ -1109,7 +1122,7 @@ DataReceivedManager.prototype.storeBuffer = function(data) {
 			this.linkSkeleton2Mesh(this.currentData.propertyID, this.currentData.propertyID);
 		}
 		// if (this.currentData.attribute ==='position'){
-		// 	//her we should to reactivate .frustumCulled = true. But we don't know the owner(s) of this array :( => TO THINK
+		// 	//her we should to reactivate .frustumCulled = true. But we don't know the owner(s) of this array => TO THINK & FIX
 		// }
 	}
 };
@@ -1152,7 +1165,6 @@ function StreamManager (websocket) {
 				else{
 					setTimeout(function(){that.ws.resume();}, that.delay/2);
 				}
-				
 			}
 			else{
 				setTimeout(function(){that.ws.resume();}, that.delay);
