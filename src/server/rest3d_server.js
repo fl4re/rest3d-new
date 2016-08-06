@@ -50,7 +50,7 @@ var computeL2SquaredNorm = function (vectorA, vectorB){
 };
 
 var createRelativeURL = function(basePath, baseURL, fileName){
-	var relativeURL = Path.relative(basePath.replace(/\\/g,'/'), baseURL);
+	var relativeURL = Path.relative(basePath.replace(/\\/g,'/'), baseURL.replace(/\\/g,'/'));
 	return Path.join(relativeURL,fileName);
 };
 
