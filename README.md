@@ -1,10 +1,10 @@
 
 ##About rest3d
 This project aim to provide a protocol and tools to feed a client with 3d data. 
-The main idea is to let the client decide what kind of data he want to visualise in first. 
+The main idea is to let the client decides what kind of data he wants to visualise in first. 
 To be generic and not depending on other restrictive liscence tools, rest3d is based on [glTF format](https://github.com/KhronosGroup/glTF) and [three.js 3D library](http://threejs.org) and [Node.js](https://nodejs.org).
 
-## How to run & try:
+## How to run example:
 1. clone or download this project
 2. [install nodejs](https://docs.npmjs.com/getting-started/installing-node) if you never did - v4.4.7
 3. at example/ `npm install` 
@@ -16,7 +16,7 @@ To be generic and not depending on other restrictive liscence tools, rest3d is b
 ###Server
 ```javascript
 var ws =  require('websocket-stream');
-var gltfStreamer = require('gast-server');
+var gltfStreamer = require('rest3d_server');
 
 function handle (stream){
     var assetManager = gltfStreamer.assetManager();
@@ -33,7 +33,7 @@ ws.createServer({server: yourServer}, handle);
 
 ###Client
 ```javascript
-<script src="./gast-client.js"></script> 
+<script src="./rest3d_client.js"></script> 
 
 var websocket = require('websocket-stream');
 
@@ -51,6 +51,7 @@ function render() {
     renderer.render( scene, camera ); 
 }
 render();
+
 streamManager.launchStream('path/myAsset.gltf');
 ```
 
@@ -60,7 +61,7 @@ streamManager.launchStream('path/myAsset.gltf');
 
 
 ## What is supported or not:
-- [x] Return server errors and warning to client
+- [x] Send server errors and warnings to client
 - Loading by URL: 
 	- [x] For 'file:///'
 	- [ ] For 'http:///'
@@ -101,7 +102,7 @@ streamManager.launchStream('path/myAsset.gltf');
 
 [Starbreeze Studio](http://www.starbreeze.com)
 
-###@contributor
+###@contributors
 **Maxime Helen** helenmaxime_at_gmail.com
 
 **Remi Arnaud** remi.arnaud_at_starbreeze.com
