@@ -6,12 +6,12 @@ To be generic and not depending on other restrictive liscence tools, rest3d is b
 
 ## How to run example:
 1. Clone or download this project
-2. [Install nodejs](https://docs.npmjs.com/getting-started/installing-node) if you never did - v4.4.7
+2. [Install nodejs](https://docs.npmjs.com/getting-started/installing-node) if you never did (v4.4.7)
 3. At src/server/ `npm install`
-3. At example/ `npm install` 
-4. At example/ `npm start`
-5. Visit `http://localhost:8080`
-6. Press `start` button
+4. At example/ `npm install` 
+5. At example/ `npm start`
+6. Visit `http://localhost:8080`
+7. Press `start` button
 
 ##Usage
 ###Server
@@ -71,7 +71,7 @@ streamManager.launchStream('path/myAsset.gltf');
 	- [ ] Client
 - [x] Asset Infos
 - [x] Sort
-- [x] GUI exemple
+- [x] GUI example
 - [x] Multiple binary files for the same asset
 - [x] Indices
 - [x] Positions
@@ -99,16 +99,18 @@ streamManager.launchStream('path/myAsset.gltf');
 - [ ] Camera Feedback
 
 ###@author
-**Selim Bekkar** selim.bekkar_at_gmail.com
+**Selim Bekkar** selim.bekkar_at_contractors.starbreeze.com
 
 [Starbreeze Studio](http://www.starbreeze.com)
 
 ###@contributors
-**Maxime Helen** helenmaxime_at_gmail.com
+**Maxime Helen** maxime.helen_at_starbreeze.com
 
 **Remi Arnaud** remi.arnaud_at_starbreeze.com
 
 **Mark Barnes** mark.barnes_at_starbreeze.com
+
+**Tony Parisi** [website](https://tonyparisi.wordpress.com)
 
 [Starbreeze Studio](http://www.starbreeze.com)
  	
