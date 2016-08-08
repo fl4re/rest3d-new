@@ -1,23 +1,23 @@
 
 ##About rest3d
 This project aim to provide a protocol and tools to feed a client with 3d data. 
-The main idea is to let the client decide what kind of data he want to visualise in first. 
+The main idea is to let the client decides what kind of data he wants to visualise in first. 
 To be generic and not depending on other restrictive liscence tools, rest3d is based on [glTF format](https://github.com/KhronosGroup/glTF) and [three.js 3D library](http://threejs.org) and [Node.js](https://nodejs.org).
 
-## How to run & try:
-1. clone or download this project
-2. [install nodejs](https://docs.npmjs.com/getting-started/installing-node) if you never did
-3. at rest3d-new-master/src/server/ `npm install`
-4. at rest3d-new-master/example/ `npm install`
-5. at rest3d-new-master/example/ `npm run start`
-6. visit `http://localhost:8080`
-7. press `start` button
+## How to run example:
+1. Clone or download this project
+2. [Install nodejs](https://docs.npmjs.com/getting-started/installing-node) if you never did - v4.4.7
+3. At src/server/ `npm install`
+3. At example/ `npm install` 
+4. At example/ `npm start`
+5. Visit `http://localhost:8080`
+6. Press `start` button
 
 ##Usage
 ###Server
 ```javascript
 var ws =  require('websocket-stream');
-var gltfStreamer = require('gast-server');
+var gltfStreamer = require('rest3d_server');
 
 function handle (stream){
     var assetManager = gltfStreamer.assetManager();
@@ -34,7 +34,7 @@ ws.createServer({server: yourServer}, handle);
 
 ###Client
 ```javascript
-<script src="./gast-client.js"></script> 
+<script src="./rest3d_client.js"></script> 
 
 var websocket = require('websocket-stream');
 
@@ -52,14 +52,17 @@ function render() {
     renderer.render( scene, camera ); 
 }
 render();
-streamManager.launchStream('path/myAsset.gltf');
 
+streamManager.launchStream('path/myAsset.gltf');
 ```
+
 **Visit [example page](https://github.com/fl4re/rest3d-new/tree/master/example) for ready to use example **
+
 **Visit [wiki page](https://github.com/fl4re/rest3d-new/wiki) for more details **
 
+
 ## What is supported or not:
-- [x] Return server errors and warning to client
+- [x] Send server errors and warnings to client
 - Loading by URL: 
 	- [x] For 'file:///'
 	- [ ] For 'http:///'
@@ -67,7 +70,6 @@ streamManager.launchStream('path/myAsset.gltf');
 	- [x] Server: Yes, but depreciated
 	- [ ] Client
 - [x] Asset Infos
-- [x] Trackball
 - [x] Sort
 - [x] GUI exemple
 - [x] Multiple binary files for the same asset
@@ -94,17 +96,14 @@ streamManager.launchStream('path/myAsset.gltf');
 - [ ] KHR_materials_common
 - [x] Textures (jpg: OK, png: OK, tga: OK, dds:must be tested )
 - [x] EnvMap
-- [ ] PostFX
 - [ ] Camera Feedback
-- [ ] Help Menu
-- [x] Layers display
 
 ###@author
 **Selim Bekkar** selim.bekkar_at_gmail.com
 
 [Starbreeze Studio](http://www.starbreeze.com)
 
-###@contributor
+###@contributors
 **Maxime Helen** helenmaxime_at_gmail.com
 
 **Remi Arnaud** remi.arnaud_at_starbreeze.com

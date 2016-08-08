@@ -240,8 +240,8 @@ function DataReceivedManager(parent){
 	this.materials 		= {};
 	this.animations 	= {}; 
 	this.cameras 		= {}; /*TODO*/
-	this.images			= {}; //Here we store the images already downloaded. 
-	this.node 			= {}; //Each element point to an object3d
+	this.images			= {}; //Here we store the images already downloaded
+	this.node 			= {}; //Each element point to a object3d
 
 };
 
@@ -265,7 +265,7 @@ DataReceivedManager.prototype.getInfo = function () {
 	return info;
 };
 
-/*This function return the primitives asked (as an array because primitve can have been duplicated). 
+/*This function returns the primitives asked (as an array because primitve can have been duplicated). 
 And create it (with the correct hierarchy) if he is not found */
 DataReceivedManager.prototype.getPrimitives = function (meshID, meshName, primitiveName){
 
@@ -336,9 +336,7 @@ DataReceivedManager.prototype.bindDataBuffer = function (dataBuffer, info){
 	var that 		= this;
 	var meshNodes 	= this.node[meshID]; 
 
-	//this.manageHierarchy(info.hierarchy, this.meshes[meshID]);
-
-	//look if he is not already bind. We only need to check the first element beceause other one are duplications.
+	//Check if he is not already linked. We only need to check the first element beceause other one are duplications.
 	if (primitives[0].geometry.getAttribute(dataBuffer.attribute) === undefined ){
 
 		if (dataBuffer.attribute === 'index'){
@@ -434,17 +432,16 @@ DataReceivedManager.prototype.linkSkeleton2Mesh = function (skeletonName, meshNa
 	var matrix 		= this.skeletons[skeletonName].bindMatrix;
 	var meshNodes 	= this.node[meshName]; 
 
-	//Bind all the primitive of a mesh, and all their duplication too.
-	//That's why we don't use this.getPrimitives, because she return one primitive with her duplication
+	//Bind all mesh's primitives, and all their duplications too.
 	for (var i=0; i<meshNodes.length; i++){
 		for (var j=0; j<meshNodes[i].children.length; j++){
 			var currentPrimitive = meshNodes[i].children[j];
-			//Convert him if it wasn't done yet. 
+			//Convert him if it wasn't done.
 			if (currentPrimitive.type !== 'SkinnedMesh'){ 
 				currentPrimitive = this.convertMesh2SkinnedMesh(currentPrimitive);
 			}
 			//Check if he is not already bind
-			if (currentPrimitive.skeleton.bones.length === 0){ // no bones means not already binded
+			if (currentPrimitive.skeleton.bones.length === 0){
 				currentPrimitive.bind(skeleton, matrix);
 				//currentPrimitive.visible = true;
 			}
@@ -709,12 +706,7 @@ DataReceivedManager.prototype.createAnimation = function (info){
 	}
 
 	if(keys !== undefined && values !== undefined && target !== undefined ){
-		// var interp = { 	keys : keys.data.array,
-		// 				values : values.data.array,
-		// 				count : values.data.array.length,
-		// 				target : target[0], //TO FIX
-		// 				path : info.path,
-		// 				type : info.interpolation };
+
 		var minRecieved = Math.min(values.sizeReceived/getSizeOfType(values.type),keys.sizeReceived);
 
 		var interp = { 	keys : keys.data,
@@ -799,11 +791,6 @@ DataReceivedManager.prototype.createNode = function (info){
 		var mat4 = new THREE.Matrix4().fromArray(info.matrix);
 		newNode.applyMatrix(mat4);
 	}
-	//if(info.camera !== undefined)		{ node.camera 		= info.camera; }
-	// if(info.skeletons !== undefined)	{ node.skeletons 	= info.skeletons.slice(0); }
-	// if(info.skin !== undefined)			{ node.skin 		= info.skin; }
-	// if(info.jointName !== undefined)	{ node.jointName 	= info.jointName; }
-	
 	if(this.node[info.id] === undefined){
 		this.node[info.id] = [];
 	}
@@ -836,7 +823,7 @@ So when we receive mesh1 hierarchy, we are sure to have all informations to buil
 /* Structur: Each node is now link with a list that hold all his duplication.
 Thus in the diagram above, m1 m1' m1'' m1''' and m1'''' will be regroup in this.node[m1.id][].
 */
-	if (hierarchy === undefined /*|| node.parent !== null*/){ //nothing to connect or already connected
+	if (hierarchy === undefined){ //nothing to connect or already connected
 		return;
 	}
 
@@ -850,24 +837,24 @@ Thus in the diagram above, m1 m1' m1'' m1''' and m1'''' will be regroup in this.
 	var parentNodes;
 	var i;
 
-	if(hierarchy.length>1){ //our node have more than one parent =>clone it and add it to his list
+	if(hierarchy.length>1){ //Our node have more than one parent =>clone it and add it to his list
 		for (i=1; i<hierarchy.length; i++){
 			currentNodes.push(node.clone());
 		}
 	}
 
-	//now we bind
+	//Now we bind
 	for (i=0; i<hierarchy.length; i++){
 		parentID = hierarchy[i].info.id;
 		parentNodes = this.node[parentID];
 
-		if(parentNodes === undefined ){ //it's the first time we meet this node
+		if(parentNodes === undefined ){ //It's the first time we meet this node
 			parentNodes = this.createNode(hierarchy[i].info);
 			parentNodes.add(currentNodes[i]);
 			this.manageHierarchy(hierarchy[i].parent, parentNodes);
 		}
 
-		else {//that was a node previously meet, we need to clone and conect our current node for each duplication of the parent node
+		else {//It was a node previously meet, we need to clone and conect our current node for each duplication of the parent node
 			for (var j = 1; j<parentNodes.length; j++){ 
 				currentNodes.push(node.clone()); 
 			}
@@ -916,7 +903,7 @@ DataReceivedManager.prototype.manageData= function (info){
 	switch(nature){
 		case 'bi':
 			if (info.attribute.indexOf('Anim_Param')===0){ //Anim are bind separately
-				this.bindDataArray(this.currentData, info);/*TODO*/
+				this.bindDataArray(this.currentData, info);
 			}
 			else{
 				this.bindDataBuffer(this.currentData, info);
@@ -1002,7 +989,6 @@ DataReceivedManager.prototype.storeTexture = function (info){
 		console.error(e);
 	};
 	
-
 	//Need to check texture format to choose the right way for loading it
 	if(info.path.indexOf('.tga')===info.path.length-4){  // .tga
 		var scope = new THREE.TGALoader();
@@ -1018,7 +1004,7 @@ DataReceivedManager.prototype.storeTexture = function (info){
 			}
 		}, onProgress, onError );	
 	}
-	else if(info.path.indexOf('.dds')===info.path.length-4){  // .dds  That's a hack... :/  TO FIx
+	else if(info.path.indexOf('.dds')===info.path.length-4){  // .dds  That's a hack because we don't fill that.images :/  TO FIx
 		var loader = new THREE.DDSLoader();
 
 		var textCompressed = loader.load(info.path);
@@ -1028,13 +1014,12 @@ DataReceivedManager.prototype.storeTexture = function (info){
 	else{ // .jpg .jpeg .png ...
 		this.images[this.currentData.source] = new THREE.ImageLoader().load(info.path, onLoad, onProgress, onError);
 	}
-	
 };
 
 
 
 DataReceivedManager.prototype.storeMaterial = function (info){
-/*TODO BECAUSE WE DON'T KNOW HOW WILL BE ORGANIZED OUR MATERIALS, FOR THE MOMENT WE MANAGE ONLY A PARTICULAR CASE*/
+/*TODO FOR THE MOMENT WE MANAGE ONLY A PARTICULAR CASE. Need to add KHR_Common_EXT */
 	var material = this.currentData.data;
 
 	var params = Object.keys(info.values);
@@ -1090,7 +1075,7 @@ DataReceivedManager.prototype.storeBuffer = function(data) {
 			break;
 	}
 
-	if (this.currentData.attribute ==='skin'){ //
+	if (this.currentData.attribute ==='skin'){ 
 
 		var matAlreadyReceived 	= this.currentData.sizeReceived / 16;
 		var matReceived 		= dataReady.length/16;
@@ -1159,7 +1144,7 @@ function StreamManager (websocket) {
 			that.ws.pause();
 			var info = that.getCurrentInfo();
 			if (info.attribute && info.attribute.indexOf('Anim_Param')>=0){
-				if (that.streamMode.primitive.extra.indexOf('TEMPORAL')>=0){ //because ib this mode a lot of small chunck are sent. So we don't want to wait to much between each chunk
+				if (that.streamMode.primitive.extra.indexOf('TEMPORAL')>=0){ //because in this mode a lot of small chuncks are sent. So we don't want to wait to much between each chunk
 					setTimeout(function(){that.ws.resume();}, that.delay/500);
 				}
 				else{
@@ -1186,7 +1171,6 @@ function StreamManager (websocket) {
 	}); 
 
 	/*TODO this.ws.on('load', this.sendAssetRe...)*/
-
 
 };
 
@@ -1303,7 +1287,7 @@ StreamManager.prototype.manageMessage = function (message){
 	if (message[0]===123){ //For sure, if the first octet != 123 it cant be a JSON 
 		try{headerInformation = JSON.parse(message);}
 		catch(e){
-			//nothing
+
 		};
 		
 		if(headerInformation!==undefined){
