@@ -64,8 +64,6 @@ var hashFunction = function(str) {
 	}
 	return hash >>> 0;
 };
-
-
 	
 var getSizeOfType = function (type) {
 	switch (type) {
@@ -198,7 +196,6 @@ NodeHierarchy.prototype.heightTransversal = function (){
 		for (var i=0; i<this.parent.length; i++){
 			wayCrossed.parent.push(this.parent[i].heightTransversal());
 		}
-
 		return wayCrossed;
 	}
 };

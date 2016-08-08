@@ -240,8 +240,8 @@ function DataReceivedManager(parent){
 	this.materials 		= {};
 	this.animations 	= {}; 
 	this.cameras 		= {}; /*TODO*/
-	this.images			= {}; //Here we store the images already downloaded. 
-	this.node 			= {}; //Each element point to an object3d
+	this.images			= {}; //Here we store the images already downloaded
+	this.node 			= {}; //Each element point to a object3d
 
 };
 
@@ -265,7 +265,7 @@ DataReceivedManager.prototype.getInfo = function () {
 	return info;
 };
 
-/*This function return the primitives asked (as an array because primitve can have been duplicated). 
+/*This function returns the primitives asked (as an array because primitve can have been duplicated). 
 And create it (with the correct hierarchy) if he is not found */
 DataReceivedManager.prototype.getPrimitives = function (meshID, meshName, primitiveName){
 
@@ -336,9 +336,7 @@ DataReceivedManager.prototype.bindDataBuffer = function (dataBuffer, info){
 	var that 		= this;
 	var meshNodes 	= this.node[meshID]; 
 
-	//this.manageHierarchy(info.hierarchy, this.meshes[meshID]);
-
-	//look if he is not already bind. We only need to check the first element beceause other one are duplications.
+	//Check if he is not already linked. We only need to check the first element beceause other one are duplications.
 	if (primitives[0].geometry.getAttribute(dataBuffer.attribute) === undefined ){
 
 		if (dataBuffer.attribute === 'index'){
@@ -434,17 +432,16 @@ DataReceivedManager.prototype.linkSkeleton2Mesh = function (skeletonName, meshNa
 	var matrix 		= this.skeletons[skeletonName].bindMatrix;
 	var meshNodes 	= this.node[meshName]; 
 
-	//Bind all the primitive of a mesh, and all their duplication too.
-	//That's why we don't use this.getPrimitives, because she return one primitive with her duplication
+	//Bind all mesh's primitives, and all their duplications too.
 	for (var i=0; i<meshNodes.length; i++){
 		for (var j=0; j<meshNodes[i].children.length; j++){
 			var currentPrimitive = meshNodes[i].children[j];
-			//Convert him if it wasn't done yet. 
+			//Convert him if it wasn't done.
 			if (currentPrimitive.type !== 'SkinnedMesh'){ 
 				currentPrimitive = this.convertMesh2SkinnedMesh(currentPrimitive);
 			}
 			//Check if he is not already bind
-			if (currentPrimitive.skeleton.bones.length === 0){ // no bones means not already binded
+			if (currentPrimitive.skeleton.bones.length === 0){
 				currentPrimitive.bind(skeleton, matrix);
 				//currentPrimitive.visible = true;
 			}
@@ -709,12 +706,7 @@ DataReceivedManager.prototype.createAnimation = function (info){
 	}
 
 	if(keys !== undefined && values !== undefined && target !== undefined ){
-		// var interp = { 	keys : keys.data.array,
-		// 				values : values.data.array,
-		// 				count : values.data.array.length,
-		// 				target : target[0], //TO FIX
-		// 				path : info.path,
-		// 				type : info.interpolation };
+
 		var minRecieved = Math.min(values.sizeReceived/getSizeOfType(values.type),keys.sizeReceived);
 
 		var interp = { 	keys : keys.data,
@@ -1083,7 +1075,7 @@ DataReceivedManager.prototype.storeBuffer = function(data) {
 			break;
 	}
 
-	if (this.currentData.attribute ==='skin'){ //
+	if (this.currentData.attribute ==='skin'){ 
 
 		var matAlreadyReceived 	= this.currentData.sizeReceived / 16;
 		var matReceived 		= dataReady.length/16;
