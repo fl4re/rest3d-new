@@ -5,12 +5,13 @@ The main idea is to let the client decides what kind of data he wants to visuali
 To be generic and not depending on other restrictive liscence tools, rest3d is based on [glTF format](https://github.com/KhronosGroup/glTF) and [three.js 3D library](http://threejs.org) and [Node.js](https://nodejs.org).
 
 ## How to run example:
-1. clone or download this project
-2. [install nodejs](https://docs.npmjs.com/getting-started/installing-node) if you never did - v4.4.7
-3. at example/ `npm install` 
-4. at example/ `npm start`
-5. visit `http://localhost:8080`
-6. press `start` button
+1. Clone or download this project
+2. [Install nodejs](https://docs.npmjs.com/getting-started/installing-node) if you never did - v4.4.7
+3. At src/server/ `npm install`
+3. At example/ `npm install` 
+4. At example/ `npm start`
+5. Visit `http://localhost:8080`
+6. Press `start` button
 
 ##Usage
 ###Server
