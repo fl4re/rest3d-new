@@ -8,10 +8,10 @@ To be generic and not depending on other restrictive liscence tools, rest3d is b
 1. Clone or download this project
 2. [Install nodejs](https://docs.npmjs.com/getting-started/installing-node) if you never did (v4.4.7)
 3. At src/server/ `npm install`
-3. At example/ `npm install` 
-4. At example/ `npm start`
-5. Visit `http://localhost:8080`
-6. Press `start` button
+4. At example/ `npm install` 
+5. At example/ `npm start`
+6. Visit `http://localhost:8080`
+7. Press `start` button
 
 ##Usage
 ###Server
