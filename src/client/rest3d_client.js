@@ -1,11 +1,11 @@
 /* 
 	Rest3d_client is an API to store a glTF stream into a Three.js client
-	author: Selim Bekkar - selim.bekkar@gmail.com
-	Starbreeze - June 2016 - v0.1.3
+	@author: Selim Bekkar - selim.bekkar_at_contractors.starbreeze.com
+	Starbreeze - Augut 2016 - v0.1.3
 
 	The MIT License (MIT)
 
-	Copyright (c) 2016 fl4re
+	Copyright (c) 2016 Starbreeze LA Inc.
 
 	Permission is hereby granted, free of charge, to any person obtaining a copy
 	of this software and associated documentation files (the "Software"), to deal
