@@ -799,11 +799,6 @@ DataReceivedManager.prototype.createNode = function (info){
 		var mat4 = new THREE.Matrix4().fromArray(info.matrix);
 		newNode.applyMatrix(mat4);
 	}
-	//if(info.camera !== undefined)		{ node.camera 		= info.camera; }
-	// if(info.skeletons !== undefined)	{ node.skeletons 	= info.skeletons.slice(0); }
-	// if(info.skin !== undefined)			{ node.skin 		= info.skin; }
-	// if(info.jointName !== undefined)	{ node.jointName 	= info.jointName; }
-	
 	if(this.node[info.id] === undefined){
 		this.node[info.id] = [];
 	}
@@ -836,7 +831,7 @@ So when we receive mesh1 hierarchy, we are sure to have all informations to buil
 /* Structur: Each node is now link with a list that hold all his duplication.
 Thus in the diagram above, m1 m1' m1'' m1''' and m1'''' will be regroup in this.node[m1.id][].
 */
-	if (hierarchy === undefined /*|| node.parent !== null*/){ //nothing to connect or already connected
+	if (hierarchy === undefined){ //nothing to connect or already connected
 		return;
 	}
 
@@ -850,24 +845,24 @@ Thus in the diagram above, m1 m1' m1'' m1''' and m1'''' will be regroup in this.
 	var parentNodes;
 	var i;
 
-	if(hierarchy.length>1){ //our node have more than one parent =>clone it and add it to his list
+	if(hierarchy.length>1){ //Our node have more than one parent =>clone it and add it to his list
 		for (i=1; i<hierarchy.length; i++){
 			currentNodes.push(node.clone());
 		}
 	}
 
-	//now we bind
+	//Now we bind
 	for (i=0; i<hierarchy.length; i++){
 		parentID = hierarchy[i].info.id;
 		parentNodes = this.node[parentID];
 
-		if(parentNodes === undefined ){ //it's the first time we meet this node
+		if(parentNodes === undefined ){ //It's the first time we meet this node
 			parentNodes = this.createNode(hierarchy[i].info);
 			parentNodes.add(currentNodes[i]);
 			this.manageHierarchy(hierarchy[i].parent, parentNodes);
 		}
 
-		else {//that was a node previously meet, we need to clone and conect our current node for each duplication of the parent node
+		else {//It was a node previously meet, we need to clone and conect our current node for each duplication of the parent node
 			for (var j = 1; j<parentNodes.length; j++){ 
 				currentNodes.push(node.clone()); 
 			}
@@ -916,7 +911,7 @@ DataReceivedManager.prototype.manageData= function (info){
 	switch(nature){
 		case 'bi':
 			if (info.attribute.indexOf('Anim_Param')===0){ //Anim are bind separately
-				this.bindDataArray(this.currentData, info);/*TODO*/
+				this.bindDataArray(this.currentData, info);
 			}
 			else{
 				this.bindDataBuffer(this.currentData, info);
@@ -1002,7 +997,6 @@ DataReceivedManager.prototype.storeTexture = function (info){
 		console.error(e);
 	};
 	
-
 	//Need to check texture format to choose the right way for loading it
 	if(info.path.indexOf('.tga')===info.path.length-4){  // .tga
 		var scope = new THREE.TGALoader();
@@ -1018,7 +1012,7 @@ DataReceivedManager.prototype.storeTexture = function (info){
 			}
 		}, onProgress, onError );	
 	}
-	else if(info.path.indexOf('.dds')===info.path.length-4){  // .dds  That's a hack... :/  TO FIx
+	else if(info.path.indexOf('.dds')===info.path.length-4){  // .dds  That's a hack because we don't fill that.images :/  TO FIx
 		var loader = new THREE.DDSLoader();
 
 		var textCompressed = loader.load(info.path);
@@ -1028,13 +1022,12 @@ DataReceivedManager.prototype.storeTexture = function (info){
 	else{ // .jpg .jpeg .png ...
 		this.images[this.currentData.source] = new THREE.ImageLoader().load(info.path, onLoad, onProgress, onError);
 	}
-	
 };
 
 
 
 DataReceivedManager.prototype.storeMaterial = function (info){
-/*TODO BECAUSE WE DON'T KNOW HOW WILL BE ORGANIZED OUR MATERIALS, FOR THE MOMENT WE MANAGE ONLY A PARTICULAR CASE*/
+/*TODO FOR THE MOMENT WE MANAGE ONLY A PARTICULAR CASE. Need to add KHR_Common_EXT */
 	var material = this.currentData.data;
 
 	var params = Object.keys(info.values);
@@ -1159,7 +1152,7 @@ function StreamManager (websocket) {
 			that.ws.pause();
 			var info = that.getCurrentInfo();
 			if (info.attribute && info.attribute.indexOf('Anim_Param')>=0){
-				if (that.streamMode.primitive.extra.indexOf('TEMPORAL')>=0){ //because ib this mode a lot of small chunck are sent. So we don't want to wait to much between each chunk
+				if (that.streamMode.primitive.extra.indexOf('TEMPORAL')>=0){ //because in this mode a lot of small chuncks are sent. So we don't want to wait to much between each chunk
 					setTimeout(function(){that.ws.resume();}, that.delay/500);
 				}
 				else{
@@ -1186,7 +1179,6 @@ function StreamManager (websocket) {
 	}); 
 
 	/*TODO this.ws.on('load', this.sendAssetRe...)*/
-
 
 };
 
@@ -1303,7 +1295,7 @@ StreamManager.prototype.manageMessage = function (message){
 	if (message[0]===123){ //For sure, if the first octet != 123 it cant be a JSON 
 		try{headerInformation = JSON.parse(message);}
 		catch(e){
-			//nothing
+
 		};
 		
 		if(headerInformation!==undefined){

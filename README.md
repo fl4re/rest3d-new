@@ -6,12 +6,11 @@ To be generic and not depending on other restrictive liscence tools, rest3d is b
 
 ## How to run & try:
 1. clone or download this project
-2. [install nodejs](https://docs.npmjs.com/getting-started/installing-node) if you never did
-3. at rest3d-new-master/src/server/ `npm install`
-4. at rest3d-new-master/example/ `npm install`
-5. at rest3d-new-master/example/ `npm run start`
-6. visit `http://localhost:8080`
-7. press `start` button
+2. [install nodejs](https://docs.npmjs.com/getting-started/installing-node) if you never did - v4.4.7
+3. at example/ `npm install` 
+4. at example/ `npm start`
+5. visit `http://localhost:8080`
+6. press `start` button
 
 ##Usage
 ###Server
@@ -53,10 +52,12 @@ function render() {
 }
 render();
 streamManager.launchStream('path/myAsset.gltf');
-
 ```
+
 **Visit [example page](https://github.com/fl4re/rest3d-new/tree/master/example) for ready to use example **
+
 **Visit [wiki page](https://github.com/fl4re/rest3d-new/wiki) for more details **
+
 
 ## What is supported or not:
 - [x] Return server errors and warning to client
@@ -67,7 +68,6 @@ streamManager.launchStream('path/myAsset.gltf');
 	- [x] Server: Yes, but depreciated
 	- [ ] Client
 - [x] Asset Infos
-- [x] Trackball
 - [x] Sort
 - [x] GUI exemple
 - [x] Multiple binary files for the same asset
@@ -94,10 +94,7 @@ streamManager.launchStream('path/myAsset.gltf');
 - [ ] KHR_materials_common
 - [x] Textures (jpg: OK, png: OK, tga: OK, dds:must be tested )
 - [x] EnvMap
-- [ ] PostFX
 - [ ] Camera Feedback
-- [ ] Help Menu
-- [x] Layers display
 
 ###@author
 **Selim Bekkar** selim.bekkar_at_gmail.com
