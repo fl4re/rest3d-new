@@ -60,7 +60,7 @@ streamManager.launchStream('path/myAsset.gltf');
 
 **Visit the [example page](https://github.com/fl4re/rest3d-new/tree/master/example) for a ready to use example.**
 
-**Visit the [wiki page](https://github.com/fl4re/rest3d-new/wiki) for more details.**
+**Visit the [wiki](https://github.com/fl4re/rest3d-new/wiki) for more details.**
 
 ## Supported features checklist
 - [x] Send server errors and warnings to client
