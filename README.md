@@ -1,19 +1,21 @@
+# rest3d
 
-##About rest3d
-This project aim to provide a protocol and tools to feed a client with 3d data. 
-The main idea is to let the client decides what kind of data he wants to visualise in first. 
-To be generic and not depending on other restrictive liscence tools, rest3d is based on [glTF format](https://github.com/KhronosGroup/glTF) and [three.js 3D library](http://threejs.org) and [Node.js](https://nodejs.org).
+This project aims to provide a protocol and tools to feed a client with 3D data. 
+The main idea is to let the client decides what kind of data to visualize first. 
+In order to be generic and to not depend on other restrictive licensed tools, rest3d is based on [glTF format](https://github.com/KhronosGroup/glTF), [three.js 3D library](http://threejs.org) and [Node.js](https://nodejs.org).
 
-## How to run example:
+## How to run the example:
+
 1. Clone or download this project
-2. [Install nodejs](https://docs.npmjs.com/getting-started/installing-node) if you never did (v4.4.7)
+2. [Install Node.js](https://docs.npmjs.com/getting-started/installing-node) (v4.4.7) if it's not already installed
 3. At src/server/ `npm install`
 4. At example/ `npm install` 
 5. At example/ `npm start`
-6. Visit `http://localhost:8080`
-7. Press `start` button
+6. Open `http://localhost:8080` in your browser
+7. Click `start` button
 
-##Usage
+## Usage
+
 ###Server
 ```javascript
 var ws =  require('websocket-stream');
@@ -56,12 +58,11 @@ render();
 streamManager.launchStream('path/myAsset.gltf');
 ```
 
-**Visit [example page](https://github.com/fl4re/rest3d-new/tree/master/example) for ready to use example **
+**Visit the [example page](https://github.com/fl4re/rest3d-new/tree/master/example) for a ready to use example.**
 
-**Visit [wiki page](https://github.com/fl4re/rest3d-new/wiki) for more details **
+**Visit the [wiki page](https://github.com/fl4re/rest3d-new/wiki) for more details.**
 
-
-## What is supported or not:
+## Supported features checklist
 - [x] Send server errors and warnings to client
 - Loading by URL: 
 	- [x] For 'file:///'
@@ -98,19 +99,22 @@ streamManager.launchStream('path/myAsset.gltf');
 - [x] EnvMap
 - [ ] Camera Feedback
 
-###@author
-**Selim Bekkar** selim.bekkar_at_contractors.starbreeze.com
+## Credits
 
-[Starbreeze Studio](http://www.starbreeze.com)
+[Starbreeze Studios](http://www.starbreeze.com)
 
-###@contributors
-**Maxime Helen** maxime.helen_at_starbreeze.com
+###Author
+**Selim Bekkar** : selim.bekkar_at_contractors.starbreeze.com
 
-**Remi Arnaud** remi.arnaud_at_starbreeze.com
+###Contributors
+**Maxime Helen** : maxime.helen_at_starbreeze.com
 
-**Mark Barnes** mark.barnes_at_starbreeze.com
+**Remi Arnaud** : remi.arnaud_at_starbreeze.com
 
-**Tony Parisi** [website](https://tonyparisi.wordpress.com)
+**Mark Barnes** : mark.barnes_at_starbreeze.com
 
-[Starbreeze Studio](http://www.starbreeze.com)
- 	
+**Tony Parisi** : [Website](https://tonyparisi.wordpress.com)
+
+## License
+
+[MIT](https://github.com/fl4re/rest3d-new/blob/master/LICENSE)
