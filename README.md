@@ -1,7 +1,7 @@
 # rest3d
 
 This project aims to provide a protocol and tools to feed a client with 3D data. 
-The main idea is to let the client decides what kind of data to visualize first. 
+The main idea is to let the client decide what kind of data to visualize first. 
 In order to be generic and to not depend on other restrictive licensed tools, rest3d is based on [glTF format](https://github.com/KhronosGroup/glTF), [three.js 3D library](http://threejs.org) and [Node.js](https://nodejs.org).
 
 This project was presented at [WebGL & glTF BOF - SIGGRAPH 2016](https://www.youtube.com/watch?v=0eWUzCa_M0E&t=44m0s)
