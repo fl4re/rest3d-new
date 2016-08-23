@@ -107,16 +107,18 @@ streamManager.launchStream('path/myAsset.gltf');
 [Starbreeze Studios](http://www.starbreeze.com)
 
 ###Author
-**Selim Bekkar** : selim.bekkar_at_contractors.starbreeze.com
+[**Selim Bekkar**] (https://github.com/selimbek)
 
 ###Contributors
-**Maxime Helen** : maxime.helen_at_starbreeze.com
+[**Maxime Helen**](https://github.com/maxime-helen-sb)
 
-**Remi Arnaud** : remi.arnaud_at_starbreeze.com
+[**Jérôme Labbe**] (https://github.com/jerome-labbe-sb)
 
-**Mark Barnes** : mark.barnes_at_starbreeze.com
+[**Remi Arnaud**](https://github.com/RemiArnaud)
 
-**Tony Parisi** : [Website](https://tonyparisi.wordpress.com)
+[**Mark Barnes**](https://github.com/mbarnes-sb)
+
+[**Tony Parisi**](https://github.com/tparisi)
 
 ## License
 
