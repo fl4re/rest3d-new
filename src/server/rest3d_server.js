@@ -1,7 +1,7 @@
 /* 
-	Rest3d_server is an API to feed a Three.js client with a glTF file
-	@author: Selim Bekkar - selim.bekkar_at_contractors.starbreeze.com
-	Starbreeze - August 2016 - v0.1.3
+	Rest3d_server is an API to feed a Three.js client with a glTF file.
+	@author: Selim Bekkar - selim.bekkar_at_gmail.com
+	v0.1.4
 
 	The MIT License (MIT)
 
@@ -359,7 +359,8 @@ DataToSend.prototype.getHeader = function (){
 /*We have differents behaviors for sending data:
 	-it's a buffer: we create a readabe stream
 	-it's a texture: we sent her path and let the client managing that by taking advantage of native protocols for images
-	-it's a material: we sent his parameter as a JSON
+	-it's a material: we sent his parameters as a JSON
+	-it's a camera: nothing, his parameters has already been sent in the header
 	-? TODO */
 /* This function return :
 	- -1 if the data is not sendable
@@ -543,9 +544,6 @@ AttributesToSend.prototype.getHeader = function (n){
 	return header;
 };
 
-// AttributesToSend.prototype.getAttributeTypeCurrentData = function (){
-// 	return this.datasToSend[0].attribute;
-// };
 
 AttributesToSend.prototype.sendData = function (webSocket, parent, sizeChunk){
 	this.parent = parent;
@@ -630,7 +628,6 @@ AttributesToSend.prototype.sort = function (){
 		for (var i = 0; i<this.datasToSend.length; i++){
 			datasToSendSorted.push(this.datasToSend[i]);
 		}
-		
 
 		this.datasToSend = datasToSendSorted;
 	}
@@ -658,12 +655,14 @@ He is here to follow the gltf design and also to help the management of differen
 Skin and Animation will be also considered as a primitive. */
 function MeshToSend () {
 	eventEmitter.call(this);
-	this.primitives 	= []; // this is a stack of tuples {primitiveNum, type, attributes, score};
-	this.animations		= []; // this is a stack of tuples {attributeName, type, attributes, score}; //this gather skin and animations beceause they are common for all primitives.
-	this.parent 		= undefined;
-	this.nextTypeToSend = 'Primitive';
-	this.isSkinned 		= false;
-	this.behavior 		= {sort:'DEFAULT', display:'DEFAULT', extra:'NONE'};
+	this.primitives 		= []; // this is a stack of tuples {primitiveNum, type, attributes, score};
+	this.animations			= []; // this is a stack of tuples {attributeName, type, attributes, score}; //this gather skin and animations beceause they are common for all primitives.
+	this.parent 			= undefined;
+	this.permutCounterPrim 	= 0;
+	this.permutCounterAnim 	= 0;
+	this.nextTypeToSend 	= 'Primitive';
+	this.isSkinned 			= false;
+	this.behavior 			= {sort:'DEFAULT', display:'DEFAULT', extra:'NONE'};
 	
 }
 util.inherits(MeshToSend, eventEmitter);
@@ -703,10 +702,6 @@ MeshToSend.prototype.pauseStream = function(){
 };
 
 MeshToSend.prototype.sendData = function (webSocket){
-	// if(this.primitives.length <= 0 && this.attribute.length <= 0){
-	// 	messageDelivery('warning','', 'MeshToSend.sendData', 'No primitives to send', webSocket);
-	// 	return;
-	// }
 	var sizeChunk;
 	if (this.nextTypeToSend === 'Animation'){
 		if (this.behavior.extra.indexOf('TEMPORAL')>=0 && this.animations[0].type === 'anim'){ //we only want this mode for temporal animation key
@@ -735,13 +730,9 @@ MeshToSend.prototype.getHeader = function (n,v){
 	return header;
 };
 
-// MeshToSend.prototype.getAttributeTypeCurrentData = function (){
-// 	return this.primitives[0].attributes.getAttributeTypeCurrentData();
-// };
 
 MeshToSend.prototype.dataSent = function (attributeTypeSent){
 	var res = 0;
-
 	if(this.permutCounterPrim>=this.primitives.length-1){
 		res = 1;
 		this.permutCounterPrim = 0;
@@ -884,6 +875,7 @@ MeshToSend.prototype.sort = function (){
 
 };
 
+
 MeshToSend.prototype.setBehavior = function (newBehavior){
 	if (newBehavior.primitive !== undefined){
 		this.behavior.sort = newBehavior.primitive.sort===undefined ? 'DEFAULT':newBehavior.primitive.sort;
@@ -928,10 +920,6 @@ function AssetManager () {
 }
 util.inherits(AssetManager, eventEmitter);
 
-
-// AssetManager.prototype.getAttributeTypeCurrentData = function (){
-// 	return this.properties[0].property.getAttributeTypeCurrentData();
-// };
 
 AssetManager.prototype.displayTree = function(offset){
 	for (var i=0; i<this.properties.length; i++){
@@ -1111,6 +1099,7 @@ AssetManager.prototype.sendHeader = function(){
 		// Nothing ! A texture don't have hierarchy
 	}
 	else if(header.attribute === 'animation'){
+		// Same for animation 
 	}
 	else { //it's a mesh (JOINT, POSITION, SKIN....)
 		if (header.attribute === 'skin'){
@@ -1126,7 +1115,6 @@ AssetManager.prototype.sendHeader = function(){
 		hierarchy = [];
 			for (i = 0; i<nodesHierarchy.length; i++){
 			tmp = nodesHierarchy[i].heightTransversal();
-			//tmp.print('headerBuffer');
 			hierarchy.push(tmp);
 		}
 		header.hierarchy=hierarchy;
@@ -1153,6 +1141,7 @@ AssetManager.prototype.sendAsset = function(){
 };
 
 AssetManager.prototype.dataSent = function(attributeTypeSent, res){
+
 	if(res===0){ //That means the primitives have not done permutation. So let's send the next data
 		this.sendHeader();
 		this.sendData();
@@ -1262,7 +1251,10 @@ AssetManager.prototype.openAsset = function (path){
 	catch (e){
 		messageDelivery('error', path, 'AssetManager.openAsset', e, this.webSocket);
 	}
-	gltfAsset = JSON.parse(gltfAsset);
+	try {gltfAsset = JSON.parse(gltfAsset);}
+	catch (e){
+		messageDelivery('error', 'parse', 'AssetManager.openAsset', e, this.webSocket);
+	}	
 
 	if (VERBOSE){
 		console.log('gltfAsset read from:' + path);
