@@ -1,6 +1,6 @@
 /* 
 	Rest3d_client is an API to store a glTF stream into a Three.js client
-	@author: Selim Bekkar - selim.bekkar_at_contractors.starbreeze.com
+	@author: Selim Bekkar - selim.bekkar_at_gmail.com
 	Starbreeze - Augut 2016 - v0.1.3
 
 	The MIT License (MIT)
@@ -1306,7 +1306,7 @@ StreamManager.prototype.manageMessage = function (message){
 
 StreamManager.prototype.sendAssetRequiered = function(asset,streamMode) {
 	if(asset===undefined){
-		alert('You must give a valid url to see something (ex: http://localhost:8080/?url=fille:///path/asset.gltf');
+		alert('You must give a valid url to see something (ex: http://localhost:8080/?url=/viewer/assets/Book/glTF/books-test.gltf');
 		return;
 	}
 	if (streamMode !== undefined){
