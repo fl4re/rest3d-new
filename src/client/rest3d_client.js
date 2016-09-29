@@ -493,7 +493,7 @@ DataReceivedManager.prototype.bindDataSkeleton = function (dataSkeleton, info){
 		bones.push(currentBone);
 		this.manageHierarchy(currentJoint.parent, currentBone);
 	}
-/*TO THINK : maybe we will create multiple skeleton with same attribute, beacause skeleton are not saved in disctionary to know if they was already created.
+/*TO THINK : In particular cases, we could create multiple skeleton with same attribute, beacause skeleton are not saved in disctionary to know if they was already created.
 That's beacause we don't have any ID to store it. BTW because bones and bindMatrix are not recreated, we considered that as acceptable. */
 	var boneInverses = undefined;
 
@@ -535,7 +535,7 @@ DataReceivedManager.prototype.createDataArray = function (info){
 					type 			: info.type,
 					attribute 		: info.attribute,
 					inProgress 		: true,
-					linkedTo 		: [], //an array to know to which animations this array is bound. 
+					linkedTo 		: [],
 					storage 		: new Uint8Array(0) };
 
 	this.currentData = newData;
@@ -727,7 +727,7 @@ DataReceivedManager.prototype.createAnimation = function (info){
 		console.warn('Can not create this animation.'+info+'  Send parameters before');
 	}
 	animation.play();
-	animation.startTime = this.parent.startTime; //for a value to have the same for everyone
+	animation.startTime = this.parent.startTime; //to have the same value for everyone
 
 	var newData = { guid 			: info.guid,
 					data 			: animation,  
@@ -753,7 +753,7 @@ DataReceivedManager.prototype.updateAnimation = function (animationName, dataGUI
 			var minRecieved = Math.min(values.sizeReceived/getSizeOfType(values.type),keys.sizeReceived);
 			currentInterpolator.count = minRecieved;
 			currentInterpolator.duration = currentInterpolator.keys[minRecieved - 1];
-			anim.duration = Math.max(anim.duration, currentInterpolator.duration); //we always add more data thus duration can only increase
+			anim.duration = Math.max(anim.duration, currentInterpolator.duration); //we always add more data, thus duration can only increase
 		}
 	}
 };
@@ -818,7 +818,7 @@ Who can do more can do less... Thus we need to tranform a acyclic graph into a t
 Meshes are not considered as a node in glTF spec. That why this graph still acyclic. But for threejs, a mesh is a node ! 
 Thus this probleme become to convert a ciclyc graph into tree. 
 Important things to remember: we built our tree from leaf to root, and all the parent hierarchy of a node is sent in one time. 
-So when we receive mesh1 hierarchy, we are sure to have all informations to build/connect him to his whole tree.
+So when we receive mesh1 hierarchy, we are sure to have all informations to build/connect him with his whole tree.
 */
 /* Structur: Each node is now link with a list that hold all his duplication.
 Thus in the diagram above, m1 m1' m1'' m1''' and m1'''' will be regroup in this.node[m1.id][].
@@ -1004,7 +1004,7 @@ DataReceivedManager.prototype.storeTexture = function (info){
 			}
 		}, onProgress, onError );	
 	}
-	else if(info.path.indexOf('.dds')===info.path.length-4){  // .dds  That's a hack because we don't fill that.images :/  TO FIx
+	else if(info.path.indexOf('.dds')===info.path.length-4){  // .dds
 		var loader = new THREE.DDSLoader();
 
 		var textCompressed = loader.load(info.path);
@@ -1103,11 +1103,11 @@ DataReceivedManager.prototype.storeBuffer = function(data) {
 	if (this.currentData.sizeReceived === this.currentData.count){
 		this.currentData.inProgress = false;
 
-		if (this.currentData.attribute === 'skin'){ //link skeleton with our mesh not that we have all the informations tu build a correct mesh
+		if (this.currentData.attribute === 'skin'){
 			this.linkSkeleton2Mesh(this.currentData.propertyID, this.currentData.propertyID);
 		}
 		// if (this.currentData.attribute ==='position'){
-		// 	//her we should to reactivate .frustumCulled = true. But we don't know the owner(s) of this array => TO THINK & FIX
+		// 	//her we should reactivate .frustumCulled = true. But we don't know the owner(s) of this array => TO THINK & FIX
 		// }
 	}
 };
