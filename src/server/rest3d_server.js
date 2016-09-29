@@ -282,10 +282,6 @@ function DataToSend () {
 	this.info 						= {};
 }
 
-DataToSend.prototype.displayTree = function(offset){
-	//console.log(offset+' '+this.nature);
-};
-
 DataToSend.prototype.init = function (info, nature, guid){
 
 	var dataInfo 	= JSON.parse(JSON.stringify(info));
@@ -293,7 +289,7 @@ DataToSend.prototype.init = function (info, nature, guid){
 
 	//We need to split the dataInfo because a part should stay on the server like binaries path, min and max...
 	if (nature === 'BUFFER'){
-		//this.min = dataInfo.min === undefined ? 0 : dataInfo.min;
+		//this.min = dataInfo.min === undefined ? 0 : dataInfo.min; gtlf spec has changed so not needed anymore
 		this.min 	= dataInfo.min;
 		this.max 	= dataInfo.max;
 		this.path 	= dataInfo.path;
